@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
@@ -54,8 +55,23 @@ public class MyAdapter extends UltimateViewAdapter<MyAdapter.MyViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.txt_title.setText(titles.get(position));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Click:" + titles.get(position), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(context, "Long Click:" + titles.get(position), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -72,6 +88,7 @@ public class MyAdapter extends UltimateViewAdapter<MyAdapter.MyViewHolder> {
     public static class MyViewHolder extends UltimateRecyclerviewViewHolder {
 
         public TextView txt_title;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             txt_title = (TextView) itemView.findViewById(R.id.txt_title);

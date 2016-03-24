@@ -49,28 +49,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        initData();
+//        initData();
     }
 
     private void initData() {
         titles = new ArrayList<>();
-        adapter = new MyAdapter(this, titles);
-        recycleview.setAdapter(adapter);
         for (count = 0; count < 20; count++) {
             titles.add("this is title:" + count);
         }
-        adapter.notifyDataSetChanged();
-        View footerView = LayoutInflater.from(this).inflate(R.layout.item_text, null);
-        TextView txt_title = (TextView) footerView.findViewById(R.id.txt_title);
-        txt_title.setText("Load More..");
-        footerView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
-        adapter.setCustomLoadMoreView(footerView);
-//        recycleview.setLoadMoreView(R.layout.item_text);
+        adapter = new MyAdapter(this, titles);
+        recycleview.setAdapter(adapter);
     }
 
     private void initView() {
         recycleview = (UltimateRecyclerView) findViewById(R.id.recycleview);
         recycleview.setLayoutManager(new LinearLayoutManager(this));
+        initData();
         recycleview.enableDefaultSwipeRefresh(true);
         recycleview.reenableLoadmore();
 
@@ -83,11 +77,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        recycleview.setLoadMoreView(R.layout.custom_bottom_progressbar);
         //加载更多监听
         recycleview.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
             public void loadMore(int itemsCount, int maxLastVisiblePosition) {
-//                Toast.makeText(MainActivity.this, "触发了加载更多", Toast.LENGTH_SHORT).show();
                 recycleview.disableLoadmore();
                 handler.sendEmptyMessageDelayed(LOADMORE, 1000);
             }
