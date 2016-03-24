@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         initData();
         recycleview.enableDefaultSwipeRefresh(true);
         recycleview.reenableLoadmore();
-
-
         //刷新监听
         recycleview.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
