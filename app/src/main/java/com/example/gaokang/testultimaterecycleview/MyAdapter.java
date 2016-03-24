@@ -55,22 +55,27 @@ public class MyAdapter extends UltimateViewAdapter<MyAdapter.MyViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
-        holder.txt_title.setText(titles.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Click:" + titles.get(position), Toast.LENGTH_SHORT).show();
-            }
-        });
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        if (position < getItemCount() && (customHeaderView != null ? position <= titles.size() : position < titles.size()) && (customHeaderView != null ? position > 0 : true)) {
+            position -= customHeaderView == null ? 0 : 1;
+            holder.txt_title.setText(titles.get(position));
+            final int tempPosition = position;
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context, "Click:" + titles.get(tempPosition), Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(context, "Long Click:" + titles.get(position), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Toast.makeText(context, "Long Click:" + titles.get(tempPosition), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
+
 
     }
 

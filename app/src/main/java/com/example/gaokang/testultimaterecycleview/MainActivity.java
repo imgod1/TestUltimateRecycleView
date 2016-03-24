@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case LOADMORE:
                     recyclerView_LoadMore();
-                    recycleview.reenableLoadmore();
                     break;
             }
         }
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-//        initData();
+        initData();
     }
 
     private void initData() {
@@ -59,31 +59,39 @@ public class MainActivity extends AppCompatActivity {
         }
         adapter = new MyAdapter(this, titles);
         recycleview.setAdapter(adapter);
+//        adapter.setCustomLoadMoreView(LayoutInflater.from(this).inflate(R.layout.custom_bottom_progressbar, null, false));
     }
 
     private void initView() {
         recycleview = (UltimateRecyclerView) findViewById(R.id.recycleview);
         recycleview.setLayoutManager(new LinearLayoutManager(this));
-        initData();
-        recycleview.enableDefaultSwipeRefresh(true);
+        /*把下面这句代码注释之后,没有loadMoreView,但是可以正常的触发下拉刷新和上拉加载更多
+        如果有这句代码的话,在打开app后无法进行上拉加载更多的回调,但是如果下拉刷新之后就可以上拉加载更多了.此时loadMoreView也是显示的*/
+        recycleview.setLoadMoreView(LayoutInflater.from(this).inflate(R.layout.custom_bottom_progressbar, null, false));
+
         recycleview.reenableLoadmore();
+        recycleview.enableDefaultSwipeRefresh(true);
+
+        Log.e("loadmore", "当前recycleview上拉加载更多的状态为:" + recycleview.isLoadMoreEnabled());
         //刷新监听
         recycleview.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                Log.e("onRefresh", "触发了下拉刷新");
+                Log.e("loadmore", "当前recycleview上拉加载更多的状态为:" + recycleview.isLoadMoreEnabled());
                 handler.sendEmptyMessageDelayed(REFRESH, 3000);
             }
         });
 
-        recycleview.setLoadMoreView(R.layout.custom_bottom_progressbar);
         //加载更多监听
         recycleview.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
             public void loadMore(int itemsCount, int maxLastVisiblePosition) {
-                recycleview.disableLoadmore();
+                Log.e("loadmore", "触发了上拉加载更多");
                 handler.sendEmptyMessageDelayed(LOADMORE, 1000);
             }
         });
+
     }
 
 
