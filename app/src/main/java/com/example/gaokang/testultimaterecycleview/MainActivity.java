@@ -1,5 +1,6 @@
 package com.example.gaokang.testultimaterecycleview;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -54,48 +55,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         titles = new ArrayList<>();
-        for (count = 0; count < 20; count++) {
-            titles.add("this is title:" + count);
-        }
         adapter = new MyAdapter(this, titles);
         recycleview.setAdapter(adapter);
-//        adapter.setCustomLoadMoreView(LayoutInflater.from(this).inflate(R.layout.custom_bottom_progressbar, null, false));
     }
 
     private void initView() {
         recycleview = (UltimateRecyclerView) findViewById(R.id.recycleview);
         recycleview.setLayoutManager(new LinearLayoutManager(this));
-        /*把下面这句代码注释之后,没有loadMoreView,但是可以正常的触发下拉刷新和上拉加载更多
-        如果有这句代码的话,在打开app后无法进行上拉加载更多的回调,但是如果下拉刷新之后就可以上拉加载更多了.此时loadMoreView也是显示的*/
-        recycleview.setLoadMoreView(LayoutInflater.from(this).inflate(R.layout.custom_bottom_progressbar, null, false));
-
+        recycleview.setEmptyView(R.layout.empty_progressbar, UltimateRecyclerView.EMPTY_CLEAR_ALL);
         recycleview.reenableLoadmore();
         recycleview.enableDefaultSwipeRefresh(true);
 
-        Log.e("loadmore", "当前recycleview上拉加载更多的状态为:" + recycleview.isLoadMoreEnabled());
         //刷新监听
         recycleview.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.e("onRefresh", "触发了下拉刷新");
-                Log.e("loadmore", "当前recycleview上拉加载更多的状态为:" + recycleview.isLoadMoreEnabled());
                 handler.sendEmptyMessageDelayed(REFRESH, 3000);
             }
         });
-
+        recycleview.setLoadMoreView(LayoutInflater.from(this).inflate(R.layout.custom_bottom_progressbar, null, false));
         //加载更多监听
         recycleview.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
             public void loadMore(int itemsCount, int maxLastVisiblePosition) {
-                Log.e("loadmore", "触发了上拉加载更多");
+                Log.e("loadmore", "load more callback");
                 handler.sendEmptyMessageDelayed(LOADMORE, 1000);
             }
         });
 
+        recycleview.setRefreshing(true);
+        handler.sendEmptyMessageDelayed(REFRESH, 2000);
     }
 
 
-    //刷新操作
+    //refresh
     private void recyclerView_Refresh() {
         titles.clear();
         for (count = 0; count < 20; count++) {
@@ -104,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    //加载更多操作
+    //load more
     private void recyclerView_LoadMore() {
         int max_num = count + 20;
         for (; count < max_num; count++) {
